@@ -10,15 +10,23 @@
       integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs"
       crossorigin="anonymous"
     ></script>
+    <link rel="stylesheet" href="reset.css" />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="container">
-      <div>Room ID: <input type="text" id="roomId" /></div>
-      <video id="localVideo" autoplay width="35%"></video>
-      <video id="remoteVideo" autoplay width="35%"></video>
-      <button id="startBtn">start</button>
-      <button id="callBtn" disabled>call</button>
-      <button id="answerBtn" disabled>answer</button>
+      <div class="roomInfo">Room ID: <input type="text" id="roomId" /></div>
+      <div class="stream">
+        <div class="video">
+          <video id="localVideo" autoplay></video>
+          <video id="remoteVideo" autoplay></video>
+        </div>
+        <div class="button">
+          <button id="startBtn">open</button>
+          <button id="callBtn" disabled>call</button>
+          <button id="answerBtn" disabled>answer</button>
+        </div>
+      </div>
     </div>
     <script src="./script.js"></script>
   </body>

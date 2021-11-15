@@ -46,9 +46,6 @@ export let socket = (io) => {
     });
 
     conn.on("askCandidate", (event) => {
-      console.log(event);
-      conn.to(event).emit("message", "this is room 1111");
-      conn.to(111).emit("message", "this is room 1111");
       conn.emit("returnCandidate", roomList[event][0]["candidate"]);
       roomList[event][0]["candidate"] = [];
     });
