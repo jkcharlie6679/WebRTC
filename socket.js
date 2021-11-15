@@ -1,25 +1,56 @@
 export let socket = (io) => {
-  let offer;
-  let answer;
-  let candidate = [];
+  let roomList = {};
+
   io.on("connection", (conn) => {
+    conn.on("joinRoom", (event) => {
+      if (event === null) {
+        let roomId = Date.now();
+        roomId = roomId.toString();
+        roomList[roomId] = [{ memeber: 1, offer: "", answer: "", candidate: [] }];
+        conn.join(roomId);
+        conn.emit("returnRoomId", roomId);
+      } else {
+        let roomMember;
+        try {
+          roomMember = roomList[event][0]["memeber"];
+        } catch (error) {
+          roomMember = null;
+        }
+        if (roomMember !== null && roomMember < 2) {
+          roomList[event][0]["memeber"] = 2;
+          conn.join(event);
+        } else {
+          conn.emit("full");
+        }
+      }
+    });
+
     conn.on("offer", (event) => {
-      offer = event;
+      roomList[event.roomId][0]["offer"] = event.data;
     });
+
     conn.on("answer", (event) => {
-      answer = event;
-      io.emit("answer", answer);
+      roomList[event.roomId][0]["answer"] = event.data;
+      conn.to(event.roomId).emit("answer", event.data);
     });
-    conn.on("askOffer", () => {
-      conn.emit("returnOffer", offer);
+
+    conn.on("askOffer", (event) => {
+      conn.emit("returnOffer", roomList[event][0]["offer"]);
     });
-    conn.on("candidate", (data) => {
-      candidate.push(data);
-      conn.broadcast.emit("candidate", data);
+
+    conn.on("candidate", (event) => {
+      if (event.data != null) {
+        roomList[event.roomId][0]["candidate"].push(event.data);
+        conn.to(event.roomId).emit("candidate", event.data);
+      }
     });
-    conn.on("askCandidate", () => {
-      conn.emit("returnCandidate", candidate);
-      candidate = [];
+
+    conn.on("askCandidate", (event) => {
+      console.log(event);
+      conn.to(event).emit("message", "this is room 1111");
+      conn.to(111).emit("message", "this is room 1111");
+      conn.emit("returnCandidate", roomList[event][0]["candidate"]);
+      roomList[event][0]["candidate"] = [];
     });
   });
 };
