@@ -1,4 +1,4 @@
-let socketio = io("https://127.0.0.1:3000");
+let socketio = io("https://192.168.0.104:3000");
 
 const constraints = {
   audio: false,
@@ -22,24 +22,33 @@ const configuration = {
   ],
 };
 
+const roomIdInput = document.querySelector("#roomId");
 const localVideo = document.querySelector("#localVideo");
 const remoteVideo = document.querySelector("#remoteVideo");
 const startBtn = document.querySelector("#startBtn");
 const callBtn = document.querySelector("#callBtn");
 const answerBtn = document.querySelector("#answerBtn");
 
+let roomId;
 let localStream;
 let localPeer = new RTCPeerConnection(configuration);
 let remoteStream;
 
 startBtn.addEventListener("click", async () => {
+  startBtn.disabled = true;
+  callBtn.disabled = false;
+  answerBtn.disabled = false;
   await navigator.mediaDevices.getUserMedia(constraints).then((mediaStream) => {
     localVideo.srcObject = mediaStream;
     localStream = mediaStream;
   });
 
   localPeer.onicecandidate = (event) => {
-    socketio.emit("candidate", event.candidate);
+    let data = {
+      roomId: roomId,
+      data: event.candidate,
+    };
+    socketio.emit("candidate", data);
   };
 
   localStream.getTracks().forEach((track) => {
@@ -52,35 +61,72 @@ startBtn.addEventListener("click", async () => {
 });
 
 callBtn.addEventListener("click", async () => {
-  localPeer.createOffer().then((offer) => {
-    localPeer.setLocalDescription(offer).then(() => {
-      socketio.emit("offer", localPeer.localDescription);
-    });
-  });
-  socketio.on("answer", (data) => {
-    localPeer.setRemoteDescription(data);
-  });
-  socketio.on("candidate", (data) => {
-    console.log(data);
-    const icdcandidate = new RTCIceCandidate(data);
-    localPeer.addIceCandidate(icdcandidate);
-  });
-});
+  callBtn.disabled = true;
+  answerBtn.disabled = true;
+  socketio.emit("joinRoom", null);
 
-answerBtn.addEventListener("click", () => {
-  socketio.emit("askCandidate");
-  socketio.on("returnCandidate", (data) => {
-    data.forEach((candidate) => {
-      const icdcandidate = new RTCIceCandidate(candidate);
+  socketio.on("returnRoomId", (data) => {
+    roomIdInput.value = data;
+    roomId = data;
+
+    localPeer.createOffer().then((offer) => {
+      localPeer.setLocalDescription(offer).then(() => {
+        let data = {
+          roomId: roomId,
+          data: localPeer.localDescription,
+        };
+        socketio.emit("offer", data);
+      });
+    });
+
+    socketio.on("answer", (data) => {
+      console.log("answer");
+      console.log(data);
+      localPeer.setRemoteDescription(data);
+    });
+
+    socketio.on("candidate", (data) => {
+      console.log("candidate");
+      console.log(data);
+      const icdcandidate = new RTCIceCandidate(data);
       localPeer.addIceCandidate(icdcandidate);
     });
   });
-  socketio.emit("askOffer");
-  socketio.on("returnOffer", (data) => {
-    localPeer.setRemoteDescription(data);
-    localPeer.createAnswer().then((answer) => {
-      localPeer.setLocalDescription(answer).then(() => {
-        socketio.emit("answer", localPeer.localDescription);
+});
+socketio.on("message", (data) => {
+  console.log("message");
+  console.log(data);
+});
+
+answerBtn.addEventListener("click", () => {
+  callBtn.disabled = true;
+  answerBtn.disabled = true;
+  socketio.on("full", () => {
+    alert("The room is full");
+    callBtn.disabled = false;
+    answerBtn.disabled = false;
+  });
+  roomId = roomIdInput.value;
+  socketio.emit("joinRoom", roomId);
+  socketio.emit("askCandidate", roomId);
+  socketio.on("returnCandidate", (data) => {
+    data.forEach((candidate) => {
+      try {
+        const icdcandidate = new RTCIceCandidate(candidate);
+        localPeer.addIceCandidate(icdcandidate);
+      } catch {}
+    });
+    socketio.emit("askOffer", roomId);
+    socketio.on("returnOffer", (data) => {
+      localPeer.setRemoteDescription(data);
+      localPeer.createAnswer().then((answer) => {
+        localPeer.setLocalDescription(answer).then(() => {
+          let data = {
+            roomId: roomId,
+            data: localPeer.localDescription,
+          };
+          socketio.emit("answer", data);
+        });
       });
     });
   });

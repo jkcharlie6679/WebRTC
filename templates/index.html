@@ -6,11 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WebRTC</title>
     <script
-      src="https://code.jquery.com/jquery-3.6.0.min.js"
-      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-      crossorigin="anonymous"
-    ></script>
-    <script
       src="https://cdn.socket.io/4.3.2/socket.io.min.js"
       integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs"
       crossorigin="anonymous"
@@ -18,11 +13,12 @@
   </head>
   <body>
     <div class="container">
+      <div>Room ID: <input type="text" id="roomId" /></div>
       <video id="localVideo" autoplay width="35%"></video>
       <video id="remoteVideo" autoplay width="35%"></video>
       <button id="startBtn">start</button>
-      <button id="callBtn">call</button>
-      <button id="answerBtn">answer</button>
+      <button id="callBtn" disabled>call</button>
+      <button id="answerBtn" disabled>answer</button>
     </div>
     <script src="./script.js"></script>
   </body>
