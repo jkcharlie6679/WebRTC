@@ -1,0 +1,41 @@
+* {
+  box-sizing: border-box;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 3rem;
+}
+.roomInfo {
+  padding-left: 2rem;
+}
+.stream {
+  display: flex;
+}
+.video {
+  font-size: 0;
+  width: 75%;
+  margin: 20px;
+}
+
+video {
+  border: 1px solid #7b7d81;
+  width: 50%;
+  height: 20rem;
+  max-height: 20rem;
+}
+
+.button {
+  display: flex;
+  align-items: flex-end;
+  padding: 0 2rem;
+  width: 25%;
+}
+button {
+  padding: 0.5rem 1rem;
+  margin: 1rem 0.25rem;
+  font-size: 1.5rem;
+  background-color: #5d9dec;
+  border-radius: 0.5rem;
+  color: #fff;
+}

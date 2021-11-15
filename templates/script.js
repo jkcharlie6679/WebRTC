@@ -80,22 +80,14 @@ callBtn.addEventListener("click", async () => {
     });
 
     socketio.on("answer", (data) => {
-      console.log("answer");
-      console.log(data);
       localPeer.setRemoteDescription(data);
     });
 
     socketio.on("candidate", (data) => {
-      console.log("candidate");
-      console.log(data);
       const icdcandidate = new RTCIceCandidate(data);
       localPeer.addIceCandidate(icdcandidate);
     });
   });
-});
-socketio.on("message", (data) => {
-  console.log("message");
-  console.log(data);
 });
 
 answerBtn.addEventListener("click", () => {
