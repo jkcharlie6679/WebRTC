@@ -15,8 +15,11 @@
   </head>
   <body>
     <div class="container">
-      <div class="roomInfo">Room ID: <input type="text" id="roomId" /></div>
       <div class="stream">
+        <div class="roomInfo">
+          <div class="roomid">Room ID: <input type="text" id="roomId" /></div>
+          <div class="username">Username: <input type="text" id="username" /></div>
+        </div>
         <div class="video">
           <video id="localVideo" autoplay></video>
           <video id="remoteVideo" autoplay></video>
@@ -25,6 +28,14 @@
           <button id="startBtn">open</button>
           <button id="callBtn" disabled>call</button>
           <button id="answerBtn" disabled>answer</button>
+        </div>
+      </div>
+      <div class="chatroom">
+        <div class="title">Chatroom</div>
+        <div class="chat" id="chat"></div>
+        <div class="input">
+          <textarea name="input" id="chatText" cols="auto" rows="auto"></textarea>
+          <button id="sendBtn">Send</button>
         </div>
       </div>
     </div>

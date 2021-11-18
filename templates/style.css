@@ -3,18 +3,24 @@
 }
 .container {
   display: flex;
-  flex-direction: column;
   padding: 3rem;
 }
 .roomInfo {
+  display: flex;
   padding-left: 2rem;
 }
+
+.username {
+  padding-left: 2rem;
+}
+
 .stream {
   display: flex;
+  flex-direction: column;
+  width: 70%;
 }
 .video {
   font-size: 0;
-  width: 75%;
   margin: 20px;
 }
 
@@ -25,9 +31,49 @@ video {
   max-height: 20rem;
 }
 
+.chatroom {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  max-width: 30%;
+}
+
+.chatroom .title {
+  font-size: 1.5rem;
+  margin: 0.25rem;
+}
+
+.chatroom .chat {
+  border: 1px solid #7b7d81;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatroom .chat * {
+  font-size: 1.2rem;
+  max-width: 60%;
+  word-break: break-all;
+  word-wrap: break-word;
+  padding: 0.5rem;
+}
+
+.chatroom .chat .send {
+  align-self: flex-end;
+}
+
+.chatroom .input {
+  margin: 0.5rem;
+  display: flex;
+}
+
+.chatroom textarea {
+  font-size: 1.25rem;
+  flex-grow: 1;
+}
+
 .button {
   display: flex;
-  align-items: flex-end;
   padding: 0 2rem;
   width: 25%;
 }
