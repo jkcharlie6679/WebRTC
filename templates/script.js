@@ -1,4 +1,4 @@
-let socketio = io("https://192.168.0.104:3000");
+let socketio = io();
 
 const constraints = {
   audio: false,
@@ -23,13 +23,19 @@ const configuration = {
 };
 
 const roomIdInput = document.querySelector("#roomId");
+const username = document.querySelector("#username");
 const localVideo = document.querySelector("#localVideo");
 const remoteVideo = document.querySelector("#remoteVideo");
 const startBtn = document.querySelector("#startBtn");
 const callBtn = document.querySelector("#callBtn");
 const answerBtn = document.querySelector("#answerBtn");
+const sendBtn = document.querySelector("#sendBtn");
+const chat = document.querySelector("#chat");
+const chatText = document.querySelector("#chatText");
 
 let roomId;
+let localUsername;
+let remoteUsername;
 let localStream;
 let localPeer = new RTCPeerConnection(configuration);
 let remoteStream;
@@ -61,12 +67,38 @@ startBtn.addEventListener("click", async () => {
 });
 
 callBtn.addEventListener("click", async () => {
+  if (username.value === "") {
+    localUsername = "caller";
+  } else {
+    localUsername = username.value;
+  }
+  username.value = localUsername;
+  username.disabled = true;
+
+  let dataChannel = localPeer.createDataChannel("chat");
+  dataChannel.onopen = (event) => {
+    dataChannel.send(localUsername);
+    sendBtn.addEventListener("click", () => {
+      dataChannel.send(chatText.value);
+      chat.innerHTML = chat.innerHTML + `<div class="send">${chatText.value}</div>`;
+      chatText.value = "";
+    });
+  };
+  dataChannel.onmessage = (event) => {
+    if (remoteUsername === undefined) {
+      remoteUsername = event.data;
+      chat.innerHTML = chat.innerHTML + `<div class="revice">${event.data} join</div>`;
+    } else {
+      chat.innerHTML = chat.innerHTML + `<div class="revice">${event.data}</div>`;
+    }
+  };
   callBtn.disabled = true;
   answerBtn.disabled = true;
   socketio.emit("joinRoom", null);
 
   socketio.on("returnRoomId", (data) => {
     roomIdInput.value = data;
+    roomIdInput.disabled = true;
     roomId = data;
 
     localPeer.createOffer().then((offer) => {
@@ -91,6 +123,36 @@ callBtn.addEventListener("click", async () => {
 });
 
 answerBtn.addEventListener("click", () => {
+  if (username.value === "") {
+    localUsername = "answer";
+  } else {
+    localUsername = username.value;
+  }
+  username.value = localUsername;
+  username.disabled = true;
+
+  localPeer.ondatachannel = (event) => {
+    let dataChannel = event.channel;
+
+    dataChannel.onopen = (event) => {
+      dataChannel.send(localUsername);
+      sendBtn.addEventListener("click", () => {
+        dataChannel.send(chatText.value);
+        chat.innerHTML = chat.innerHTML + `<div class="send">${chatText.value}</div>`;
+        chatText.value = "";
+      });
+    };
+
+    dataChannel.onmessage = (event) => {
+      if (remoteUsername === undefined) {
+        remoteUsername = event.data;
+        chat.innerHTML = chat.innerHTML + `<div class="revice">${event.data} join</div>`;
+      } else {
+        chat.innerHTML = chat.innerHTML + `<div class="revice">${event.data}</div>`;
+      }
+    };
+  };
+
   callBtn.disabled = true;
   answerBtn.disabled = true;
   socketio.on("full", () => {
