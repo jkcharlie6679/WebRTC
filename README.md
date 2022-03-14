@@ -6,6 +6,7 @@ With [WebRTC](https://webrtc.org/), you can add real-time communication capabili
 
 ## Deploy the Platform
 
+- Create your TLS credentials
 - `nmp install`
 - `node app.js`
 - Visit the `https://127.0.0.1:3000`
