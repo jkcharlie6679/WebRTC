@@ -1,4 +1,4 @@
-export let socket = (io) => {
+let socket = (io) => {
   let roomList = {};
 
   io.on('connection', (conn) => {
@@ -51,3 +51,6 @@ export let socket = (io) => {
     });
   });
 };
+
+export default socket;
+
