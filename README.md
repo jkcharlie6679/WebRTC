@@ -7,8 +7,11 @@ With [WebRTC](https://webrtc.org/), you can add real-time communication capabili
 ## Deploy the Platform
 
 - Create your TLS credentials `server.key` and `server.crt` into the `./ssl` folder. 
-- `nmp install`
-- `node app.js`
+
+> For testing, it is possible to use the [OpenSSL](https://www.openssl.org) to generate the TLS credentials.
+
+- `npm install`
+- `node index.js`
 - Visit the `https://127.0.0.1:3000`
 
 ## How to Use
